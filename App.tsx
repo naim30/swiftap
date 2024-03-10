@@ -1,118 +1,99 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import SplashScreen from './containers/SplashScreen';
+import HomeScreen from './containers/HomeScreen';
+import SelectTokenScreen from './containers/SelectTokenScreen';
+import PaymentScreen from './containers/PaymentScreen';
+import {TokenPriceObjectType} from './utils/api';
+import SuccessScreen from './containers/SuccessScreen';
+import ErrorScreen from './containers/ErrorScreen';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+export type RootStackParamList = {
+  splash_screen: undefined;
+  home_screen: undefined;
+  select_token_screen: {
+    tokenPrices: Array<TokenPriceObjectType>;
   };
+  payment_screen: {
+    url: string;
+    token: TokenPriceObjectType;
+    checkoutSessionId: string;
+  };
+  success_screen: {
+    token: TokenPriceObjectType;
+    transactionHash: string;
+  };
+  error_screen: {
+    title: string;
+    description: string;
+  };
+};
 
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+export default function App() {
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="splash_screen">
+        <Stack.Screen
+          name="splash_screen"
+          component={SplashScreen}
+          options={{headerShown: false}}
+        />
+
+        <Stack.Screen
+          name="home_screen"
+          component={HomeScreen}
+          options={{
+            headerShown: false,
+            animation: 'fade',
+          }}
+        />
+
+        <Stack.Screen
+          name="select_token_screen"
+          component={SelectTokenScreen}
+          options={{
+            title: 'Select Token',
+            headerShadowVisible: false,
+            headerStyle: {
+              backgroundColor: '#f2f3f8',
+            },
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              fontFamily: 'Poppins-Medium',
+              fontSize: 16,
+            },
+            animation: 'ios',
+          }}
+        />
+
+        <Stack.Screen
+          name="payment_screen"
+          component={PaymentScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="success_screen"
+          component={SuccessScreen}
+          options={{
+            headerShown: false,
+            animation: 'fade_from_bottom',
+          }}
+        />
+
+        <Stack.Screen
+          name="error_screen"
+          component={ErrorScreen}
+          options={{
+            headerShown: false,
+            animation: 'fade_from_bottom',
+          }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
-
-export default App;
